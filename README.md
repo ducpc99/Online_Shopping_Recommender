@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Simple Online Shop: Manage Products and Orders with Django
 ![Screenshot 2022-01-09 at 17-04-55 Django Online Shop](https://user-images.githubusercontent.com/71011395/148684469-79bfdb07-efa0-4dde-ad76-1f3277f833e6.png)
 
@@ -77,3 +78,6 @@ Feel free to explore, contribute, and customize this according to your needs!
 
 ## App Preview
 ![Peek 2022-01-09 19-15](https://user-images.githubusercontent.com/71011395/148689722-6ceacc8f-81b7-48e0-a258-9d4e543d1e7c.gif)
+=======
+# OnlineShopping
+>>>>>>> 1e924245f5fd6581c2e2284f03fbe1f1a9eebd85
