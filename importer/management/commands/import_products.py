@@ -1,30 +1,47 @@
+import csv
 from django.core.management.base import BaseCommand
-import pandas as pd
-from shop.models import Product, Category  # Đảm bảo đây là đường dẫn đúng
+from slugify import slugify  # Sử dụng slugify từ slugify library
+from shop.models import Product, Category
 
 class Command(BaseCommand):
-    help = 'Import products from a CSV file into the database.'
+    help = 'Import products from a CSV file'
 
-    def handle(self, *args, **options):
-        file_path = r'C:\Users\pcduc\Downloads\onlineshop\online-shop\importer\product.csv'
-        self.stdout.write("Starting import...")
-        self.import_products(file_path)
-        self.stdout.write(self.style.SUCCESS('Successfully imported all products.'))
+    def handle(self, *args, **kwargs):
+        with open('importer/products.csv', newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                # Kiểm tra và tạo danh mục chính nếu không có danh mục phụ
+                if not row['sub_category']:
+                    parent_category, created = Category.objects.get_or_create(
+                        title=row['category'],
+                        defaults={'slug': slugify(row['category']), 'is_sub': False}
+                    )
+                    category = parent_category
+                else:
+                    # Kiểm tra và tạo danh mục phụ nếu có
+                    parent_category, created = Category.objects.get_or_create(
+                        title=row['category'],
+                        defaults={'slug': slugify(row['category']), 'is_sub': False}
+                    )
+                    sub_category, created = Category.objects.get_or_create(
+                        title=row['sub_category'],
+                        sub_category=parent_category,
+                        defaults={'slug': slugify(row['sub_category']), 'is_sub': True}
+                    )
+                    category = sub_category
 
-    def import_products(self, file_path):
-        data = pd.read_csv(file_path)
-        for index, row in data.iterrows():
-            category, _ = Category.objects.get_or_create(title=row['category'])
-            try:
+                # Thêm sản phẩm vào CSDL
                 product, created = Product.objects.get_or_create(
                     title=row['title'],
-                    price=row['price'],
-                    category=category,  # Sử dụng đối tượng Category
-                    image=row['image_url']  # Đảm bảo bạn xử lý trường image phù hợp
+                    defaults={
+                        'category': category,
+                        'image_url': row['image_url'],
+                        'description': row['description'],
+                        'price': row['price'],
+                        'slug': slugify(row['title'])
+                    }
                 )
                 if created:
-                    self.stdout.write(self.style.SUCCESS(f'Imported {product.title}'))
+                    self.stdout.write(self.style.SUCCESS(f'Added product: {row["title"]}'))
                 else:
-                    self.stdout.write(f'Product {product.title} already exists.')
-            except Exception as e:
-                self.stdout.write(self.style.ERROR(f'Error importing {row["title"]}: {str(e)}'))
+                    self.stdout.write(self.style.WARNING(f'Product already exists: {row["title"]}'))
