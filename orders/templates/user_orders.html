@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 
 {% block content %}
 
@@ -14,14 +15,14 @@
     <h3><b class="text-danger">Cancelled</b></h3>
 {% endif %}
 <div class="text-muted border-top pt-2"></div>
-{% for item in order.items.all  %}
+{% for item in order.items.all %}
     <div class="border-bottom p-2">
         <p>product: <a class="text-decoration-none" href="{{ item.product.get_absolute_url }}">{{item.product.title}}</a></p>
-        <p>Price: ${{item.price}}</p>
+        <p>Price: {{item.price|currency}}</p>
         <p>quantity: {{item.quantity}}</p>
     </div>
 {% endfor %}
-<b>Total price: ${{ order.get_total_price }}</b>
+<b>Total price: {{ order.get_total_price|currency }}</b>
 </div>
 {% endfor %}
 {% else %}

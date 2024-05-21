@@ -19,7 +19,8 @@ class Category(models.Model):
         return reverse('shop:product_detail', kwargs={'slug': self.slug})
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
+        if not self.slug:
+            self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
 
@@ -45,4 +46,11 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
+        # Ensure the slug is unique
+        original_slug = self.slug
+        queryset = Product.objects.all()
+        next_num = 1
+        while queryset.filter(slug=self.slug).exists():
+            self.slug = f"{original_slug}-{next_num}"
+            next_num += 1
         super().save(*args, **kwargs)
