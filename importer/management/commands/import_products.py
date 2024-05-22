@@ -7,38 +7,32 @@ class Command(BaseCommand):
     help = 'Import products from a CSV file'
 
     def handle(self, *args, **kwargs):
-        with open('importer/data_smartphone.csv', newline='', encoding='utf-8') as csvfile:
+        with open('importer/products.csv', newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 # Xử lý danh mục chính
-                parent_category_slug = slugify(row['category'])
                 parent_category, created = Category.objects.get_or_create(
                     title=row['category'],
-                    defaults={'slug': self.get_unique_slug(parent_category_slug, Category), 'is_sub': False}
+                    defaults={'slug': self.get_unique_slug(row['category'], Category), 'is_sub': False}
                 )
 
-                if not row['sub_category']:
-                    category = parent_category
-                else:
-                    # Xử lý danh mục phụ
-                    sub_category_slug = slugify(row['sub_category'])
+                # Xử lý danh mục phụ nếu có
+                if row['sub_category']:
                     sub_category, created = Category.objects.get_or_create(
                         title=row['sub_category'],
-                        defaults={
-                            'slug': self.get_unique_slug(sub_category_slug, Category),
-                            'sub_category': parent_category,
-                            'is_sub': True
-                        }
+                        sub_category=parent_category,  # Đảm bảo parent_category được truyền ở đây
+                        defaults={'slug': self.get_unique_slug(row['sub_category'], Category), 'is_sub': True}
                     )
                     category = sub_category
+                else:
+                    category = parent_category
 
                 # Chuyển đổi giá sang định dạng số
                 price_str = row['price'].replace('.', '')
                 price = float(price_str)
 
                 # Tạo slug duy nhất cho sản phẩm
-                product_slug = slugify(row['title'])
-                product_slug = self.get_unique_slug(product_slug, Product)
+                product_slug = self.get_unique_slug(row['title'], Product)
 
                 # Thêm sản phẩm vào CSDL
                 product, created = Product.objects.get_or_create(
@@ -57,9 +51,10 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.WARNING(f'Product already exists: {row["title"]}'))
 
     def get_unique_slug(self, base_slug, model_class):
-        slug = base_slug
-        count = 1
-        while model_class.objects.filter(slug=slug).exists():
-            slug = f"{base_slug}-{count}"
-            count += 1
-        return slug
+        slug = slugify(base_slug)
+        unique_slug = slug
+        num = 1
+        while model_class.objects.filter(slug=unique_slug).exists():
+            unique_slug = f'{slug}-{num}'
+            num += 1
+        return unique_slug

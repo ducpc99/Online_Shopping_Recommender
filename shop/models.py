@@ -21,6 +21,13 @@ class Category(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
+        # Ensure the slug is unique
+        original_slug = self.slug
+        queryset = Category.objects.all()
+        next_num = 1
+        while queryset.filter(slug=self.slug).exists():
+            self.slug = f"{original_slug}-{next_num}"
+            next_num += 1
         super().save(*args, **kwargs)
 
 

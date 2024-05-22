@@ -1,4 +1,6 @@
 {% extends "dashboard.html" %}
+{% load custom_filters %}
+
 {% block content %}
 <table class="table">
     <thead class="thead-dark">
@@ -17,7 +19,7 @@
         <th scope="row">{{ forloop.counter }}</th>
         <td>{{ order.user.full_name }}</td>
         <td>{{ order.id }}</td>
-        <td>{{ order.get_total_price }}₫</td>
+        <td>{{ order.get_total_price|currency }}</td>
         {% if order.status %}
             <td class="text-success">Successful</td>
         {% else %}
@@ -28,7 +30,4 @@
     </tbody>
     {% endfor %}
   </table>
-  
-
 {% endblock %}
-
