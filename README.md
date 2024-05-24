@@ -1,10 +1,48 @@
-# How to run server
-Using docker to deploy, we need to use one command to run
+# Online Shopping Final Project
 
-'docker-compose up --build'
+This is the final project for the Online Shopping application. It uses Docker to manage and deploy the application.
 
-# Manager Dashboard Access
-To access the custom dashboard for managers, please use the following credentials:
+## Hướng dẫn sử dụng
 
-Email: manager@example.com
-Password: managerpass1234
+### Yêu cầu
+- Docker
+- Docker Compose
+
+### Cài đặt và khởi động dự án
+
+1. **Xây dựng Docker image:**
+    ```sh
+    docker-compose build
+    ```
+
+2. **Chạy lệnh migrate:**
+    ```sh
+    docker-compose run web python manage.py migrate
+    ```
+
+3. **Import sản phẩm:**
+    ```sh
+    docker-compose run web python manage.py import_products
+    ```
+
+4. **Khởi động dịch vụ:**
+    ```sh
+    docker-compose up
+    ```
+
+### Tài khoản Admin
+
+- Email: manager@example.com
+- Mật khẩu: managerpass1234
+
+## Đóng góp
+
+1. Fork this repository
+2. Create a new branch (`git checkout -b feature-branch`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin feature-branch`)
+5. Create a new Pull Request
+
+## Giấy phép
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
