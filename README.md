@@ -1,5 +1,6 @@
 # How to run server
 Using docker to deploy, we need to use one command to run
+
 'docker-compose up --build'
 
 # Manager Dashboard Access
