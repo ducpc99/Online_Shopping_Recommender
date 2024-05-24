@@ -76,10 +76,12 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'db_OS',
         'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
+        'PASSWORD': '',  # Mật khẩu rỗng
+        'HOST': 'db',
+        'PORT': '3306',
     }
 }
+
 
 AUTH_USER_MODEL = 'accounts.User'
 
