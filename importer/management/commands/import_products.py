@@ -7,7 +7,8 @@ class Command(BaseCommand):
     help = 'Import products from a CSV file'
 
     def handle(self, *args, **kwargs):
-        with open('importer/products.csv', newline='', encoding='utf-8') as csvfile:
+        file_path = 'importer/products.csv'
+        with open(file_path, newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 # Xử lý danh mục chính

@@ -2,7 +2,6 @@ from django.db import models
 from django.urls import reverse
 from django.template.defaultfilters import slugify
 
-
 class Category(models.Model):
     title = models.CharField(max_length=200)
     sub_category = models.ForeignKey(
@@ -20,13 +19,13 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            self.slug = slugify(self.title)[:200]  # Giới hạn độ dài của slug
         # Ensure the slug is unique
         original_slug = self.slug
         queryset = Category.objects.all()
         next_num = 1
         while queryset.filter(slug=self.slug).exists():
-            self.slug = f"{original_slug}-{next_num}"
+            self.slug = f"{original_slug[:190]}-{next_num}"  # Đảm bảo slug vẫn trong giới hạn
             next_num += 1
         super().save(*args, **kwargs)
 
@@ -39,7 +38,7 @@ class Product(models.Model):
     description = models.TextField()
     price = models.IntegerField()
     date_created = models.DateTimeField(auto_now_add=True)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(max_length=200, unique=True)  # Giới hạn độ dài của slug
 
     class Meta:
         ordering = ('-date_created',)
@@ -52,12 +51,12 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            self.slug = slugify(self.title)[:200]  # Giới hạn độ dài của slug
         # Ensure the slug is unique
         original_slug = self.slug
         queryset = Product.objects.all()
         next_num = 1
         while queryset.filter(slug=self.slug).exists():
-            self.slug = f"{original_slug}-{next_num}"
+            self.slug = f"{original_slug[:190]}-{next_num}"  # Đảm bảo slug vẫn trong giới hạn
             next_num += 1
         super().save(*args, **kwargs)
