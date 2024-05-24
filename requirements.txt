@@ -3,4 +3,9 @@ Django==4.0
 django-crispy-forms==1.13.0
 Pillow==10.3.0
 sqlparse==0.4.2
+<<<<<<< HEAD
 mysqlclient
+=======
+mysqlclient==2.1.0
+python-slugify
+>>>>>>> f2c1ddf112f9217eb0f9438daa0d3b2537019c71
