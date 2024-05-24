@@ -1,8 +1,8 @@
-How to run server
-pip install -r requirements.txt
-python manage.py runserver
+# How to run server
+Using docker to deploy, we need to use one command to run
+'docker-compose up --build'
 
-#Manager Dashboard Access
+# Manager Dashboard Access
 To access the custom dashboard for managers, please use the following credentials:
 
 Email: manager@example.com
