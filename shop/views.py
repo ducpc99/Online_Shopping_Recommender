@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from shop.models import Product, Category
+from .models import Product, Category, Comment
+from .forms import CommentForm
 from cart.forms import QuantityForm
 
 import pickle
@@ -62,7 +63,7 @@ def get_collaborative_recommendations(user_id, num_recommendations=5):
     
     # In kích thước của user_vector và svd.components_ để kiểm tra
     print("Kích thước user_vector:", user_vector.shape)
-    print("Kích thước svd.components_:", svd.components_.shape)
+    print("Kích thước svd.components_.", svd.components_.shape)
     
     # Thực hiện phép nhân ma trận
     try:
@@ -110,12 +111,26 @@ def product_detail(request, slug):
     recommendations = get_combined_recommendations(product.title, request.user.id)
     recommended_products = Product.objects.filter(title__in=recommendations['title'].tolist())
     
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.product = product
+            new_comment.user = request.user
+            new_comment.save()
+            messages.success(request, "Your comment has been added!")
+            return redirect('shop:product_detail', slug=product.slug)
+    else:
+        comment_form = CommentForm()
+
     context = {
         'title': product.title,
         'product': product,
         'form': form,
+        'comment_form': comment_form,
         'favorites': 'favorites',
-        'recommended_products': recommended_products
+        'recommended_products': recommended_products,
+        'comments': product.comments.all()
     }
     if request.user.likes.filter(id=product.id).first():
         context['favorites'] = 'remove'
@@ -163,3 +178,28 @@ def filter_by_category(request, slug):
                 result.extend(Product.objects.filter(category=sub_category).all())
     context = {'products': paginat(request, result)}
     return render(request, 'home_page.html', context)
+
+@login_required
+def add_comment(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            # Lưu bình luận chỉ khi người dùng đăng nhập và sản phẩm tồn tại
+            if request.user.is_authenticated:
+                new_comment = comment_form.save(commit=False)
+                new_comment.product = product
+                new_comment.user = request.user
+                new_comment.save()
+                messages.success(request, "Your comment has been added!")
+            else:
+                messages.error(request, "Please login to add a comment.")
+        else:
+            messages.error(request, "Invalid comment form.")
+    else:
+        messages.error(request, "Invalid request method.")
+    
+    # Sau khi thêm bình luận, chuyển hướng người dùng đến trang chi tiết sản phẩm
+    return redirect('shop:product_detail', slug=product.slug)
+
