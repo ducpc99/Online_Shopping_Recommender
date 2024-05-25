@@ -25,4 +25,4 @@ services:
       - db
 
 volumes:
-
+  mariadb_data:

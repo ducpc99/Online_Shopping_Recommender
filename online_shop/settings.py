@@ -142,3 +142,4 @@ EMAIL_PORT = 587
 EMAIL_USE_SSL = False
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'username@example.com'
+EMAIL_HOST_PASSWORD = 'your-password'
