@@ -29,4 +29,3 @@ COPY . /app/
 ENV PYTHONUNBUFFERED 1
 
 # Chạy lệnh migrate, import sản phẩm và collectstatic khi container khởi động
-CMD ["sh", "-c", "python manage.py migrate && python manage.py import_products && python manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"]
