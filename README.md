@@ -29,6 +29,10 @@ This is the final project for the Online Shopping application. It uses Docker to
     ```sh
     docker-compose up
     ```
+5. **Truy cập địa chỉ:**
+    ```sh
+    http://127.0.0.1:8000/  or localhost:8000
+    ```
 
 ### Tài khoản Admin
 
